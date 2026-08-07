@@ -10,33 +10,195 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as AuthenticatedBulletinsRouteImport } from './routes/_authenticated/bulletins'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedSetupRouteImport } from './routes/_authenticated/setup'
+import { Route as AuthenticatedStaffRouteImport } from './routes/_authenticated/staff'
+import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticated/students'
+import { Route as MarksheetTokenRouteImport } from './routes/marksheet.$token'
+import { Route as AuthenticatedClassesIndexRouteImport } from './routes/_authenticated/classes.index'
+import { Route as AuthenticatedClassesClassIdRouteImport } from './routes/_authenticated/classes.$classId'
+import { Route as AuthenticatedGradesClassIdRouteImport } from './routes/_authenticated/grades.$classId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedBulletinsRoute = AuthenticatedBulletinsRouteImport.update({
+  id: '/bulletins',
+  path: '/bulletins',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSetupRoute = AuthenticatedSetupRouteImport.update({
+  id: '/setup',
+  path: '/setup',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedStaffRoute = AuthenticatedStaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedStudentsRoute = AuthenticatedStudentsRouteImport.update({
+  id: '/students',
+  path: '/students',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const MarksheetTokenRoute = MarksheetTokenRouteImport.update({
+  id: '/marksheet/$token',
+  path: '/marksheet/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedClassesIndexRoute =
+  AuthenticatedClassesIndexRouteImport.update({
+    id: '/classes/',
+    path: '/classes/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedClassesClassIdRoute =
+  AuthenticatedClassesClassIdRouteImport.update({
+    id: '/classes/$classId',
+    path: '/classes/$classId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedGradesClassIdRoute =
+  AuthenticatedGradesClassIdRouteImport.update({
+    id: '/grades/$classId',
+    path: '/grades/$classId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/bulletins': typeof AuthenticatedBulletinsRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/setup': typeof AuthenticatedSetupRoute
+  '/staff': typeof AuthenticatedStaffRoute
+  '/students': typeof AuthenticatedStudentsRoute
+  '/marksheet/$token': typeof MarksheetTokenRoute
+  '/classes/$classId': typeof AuthenticatedClassesClassIdRoute
+  '/grades/$classId': typeof AuthenticatedGradesClassIdRoute
+  '/classes/': typeof AuthenticatedClassesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/bulletins': typeof AuthenticatedBulletinsRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/setup': typeof AuthenticatedSetupRoute
+  '/staff': typeof AuthenticatedStaffRoute
+  '/students': typeof AuthenticatedStudentsRoute
+  '/marksheet/$token': typeof MarksheetTokenRoute
+  '/classes/$classId': typeof AuthenticatedClassesClassIdRoute
+  '/grades/$classId': typeof AuthenticatedGradesClassIdRoute
+  '/classes': typeof AuthenticatedClassesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_authenticated/bulletins': typeof AuthenticatedBulletinsRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/setup': typeof AuthenticatedSetupRoute
+  '/_authenticated/staff': typeof AuthenticatedStaffRoute
+  '/_authenticated/students': typeof AuthenticatedStudentsRoute
+  '/marksheet/$token': typeof MarksheetTokenRoute
+  '/_authenticated/classes/$classId': typeof AuthenticatedClassesClassIdRoute
+  '/_authenticated/grades/$classId': typeof AuthenticatedGradesClassIdRoute
+  '/_authenticated/classes/': typeof AuthenticatedClassesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/sitemap.xml'
+    | '/bulletins'
+    | '/dashboard'
+    | '/settings'
+    | '/setup'
+    | '/staff'
+    | '/students'
+    | '/marksheet/$token'
+    | '/classes/$classId'
+    | '/grades/$classId'
+    | '/classes/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/sitemap.xml'
+    | '/bulletins'
+    | '/dashboard'
+    | '/settings'
+    | '/setup'
+    | '/staff'
+    | '/students'
+    | '/marksheet/$token'
+    | '/classes/$classId'
+    | '/grades/$classId'
+    | '/classes'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/sitemap.xml'
+    | '/_authenticated/bulletins'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/settings'
+    | '/_authenticated/setup'
+    | '/_authenticated/staff'
+    | '/_authenticated/students'
+    | '/marksheet/$token'
+    | '/_authenticated/classes/$classId'
+    | '/_authenticated/grades/$classId'
+    | '/_authenticated/classes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  MarksheetTokenRoute: typeof MarksheetTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +210,134 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/bulletins': {
+      id: '/_authenticated/bulletins'
+      path: '/bulletins'
+      fullPath: '/bulletins'
+      preLoaderRoute: typeof AuthenticatedBulletinsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/setup': {
+      id: '/_authenticated/setup'
+      path: '/setup'
+      fullPath: '/setup'
+      preLoaderRoute: typeof AuthenticatedSetupRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/staff': {
+      id: '/_authenticated/staff'
+      path: '/staff'
+      fullPath: '/staff'
+      preLoaderRoute: typeof AuthenticatedStaffRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/students': {
+      id: '/_authenticated/students'
+      path: '/students'
+      fullPath: '/students'
+      preLoaderRoute: typeof AuthenticatedStudentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/marksheet/$token': {
+      id: '/marksheet/$token'
+      path: '/marksheet/$token'
+      fullPath: '/marksheet/$token'
+      preLoaderRoute: typeof MarksheetTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/classes/': {
+      id: '/_authenticated/classes/'
+      path: '/classes'
+      fullPath: '/classes/'
+      preLoaderRoute: typeof AuthenticatedClassesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/classes/$classId': {
+      id: '/_authenticated/classes/$classId'
+      path: '/classes/$classId'
+      fullPath: '/classes/$classId'
+      preLoaderRoute: typeof AuthenticatedClassesClassIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/grades/$classId': {
+      id: '/_authenticated/grades/$classId'
+      path: '/grades/$classId'
+      fullPath: '/grades/$classId'
+      preLoaderRoute: typeof AuthenticatedGradesClassIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedBulletinsRoute: typeof AuthenticatedBulletinsRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedSetupRoute: typeof AuthenticatedSetupRoute
+  AuthenticatedStaffRoute: typeof AuthenticatedStaffRoute
+  AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRoute
+  AuthenticatedClassesClassIdRoute: typeof AuthenticatedClassesClassIdRoute
+  AuthenticatedGradesClassIdRoute: typeof AuthenticatedGradesClassIdRoute
+  AuthenticatedClassesIndexRoute: typeof AuthenticatedClassesIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedBulletinsRoute: AuthenticatedBulletinsRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedSetupRoute: AuthenticatedSetupRoute,
+  AuthenticatedStaffRoute: AuthenticatedStaffRoute,
+  AuthenticatedStudentsRoute: AuthenticatedStudentsRoute,
+  AuthenticatedClassesClassIdRoute: AuthenticatedClassesClassIdRoute,
+  AuthenticatedGradesClassIdRoute: AuthenticatedGradesClassIdRoute,
+  AuthenticatedClassesIndexRoute: AuthenticatedClassesIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  MarksheetTokenRoute: MarksheetTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
