@@ -52,10 +52,10 @@ export const updateTeacher = createServerFn({ method: "POST" })
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase
+    const { data: changed, error } = await context.supabase
       .from("teachers")
       .update({ full_name: data.full_name, login_code: data.login_code.toLowerCase(), active: data.active })
-      .eq("id", data.teacherId);
+      .eq("id", data.teacherId).select("id").single();
     if (error) {
       if (error.code === "23505") throw new Error("That login code is already used in this school.");
       throw error;
@@ -68,10 +68,10 @@ export const resetTeacherPassword = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({ teacherId: z.string().uuid(), password: z.string().min(4).max(72) }).parse(d))
   .handler(async ({ data, context }) => {
     const { hashPassword } = await import("./teacher-auth.server");
-    const { error } = await context.supabase
+    const { data: changed, error } = await context.supabase
       .from("teachers")
       .update({ password_hash: hashPassword(data.password) })
-      .eq("id", data.teacherId);
+      .eq("id", data.teacherId).select("id").single();
     if (error) throw error;
     return { ok: true };
   });
@@ -80,7 +80,7 @@ export const deleteTeacher = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ teacherId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.from("teachers").delete().eq("id", data.teacherId);
+    const { data: changed, error } = await context.supabase.from("teachers").delete().eq("id", data.teacherId).select("id").single();
     if (error) throw error;
     return { ok: true };
   });
@@ -96,6 +96,12 @@ export const assignTeacher = createServerFn({ method: "POST" })
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
+    const [teacher, cls, subject] = await Promise.all([
+      context.supabase.from("teachers").select("id").eq("id", data.teacherId).eq("school_id", data.schoolId).single(),
+      context.supabase.from("classes").select("id").eq("id", data.classId).eq("school_id", data.schoolId).single(),
+      context.supabase.from("subjects").select("id").eq("id", data.subjectId).eq("class_id", data.classId).eq("school_id", data.schoolId).single(),
+    ]);
+    for (const result of [teacher, cls, subject]) if (result.error) throw result.error;
     const { error } = await context.supabase.from("teacher_assignments").insert({
       school_id: data.schoolId,
       teacher_id: data.teacherId,
@@ -113,7 +119,7 @@ export const unassignTeacher = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ assignmentId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.from("teacher_assignments").delete().eq("id", data.assignmentId);
+    const { error } = await context.supabase.from("teacher_assignments").delete().eq("id", data.assignmentId).select("id").single();
     if (error) throw error;
     return { ok: true };
   });

@@ -56,6 +56,28 @@ export const saveGrades = createServerFn({ method: "POST" })
     if (data.entries.some((e) => e.mark != null && e.mark > maxMark)) {
       throw new Error(`Marks must be between 0 and ${maxMark} for this school.`);
     }
+    const { data: sequence, error: sequenceError } = await context.supabase.from("sequences")
+      .select("id").eq("id", data.sequenceId).eq("school_id", data.schoolId).single();
+    if (sequenceError || !sequence) throw sequenceError ?? new Error("Sequence not found in this school.");
+    const studentIds = [...new Set(data.entries.map((e) => e.studentId))];
+    const subjectIds = [...new Set(data.entries.map((e) => e.subjectId))];
+    const [students, subjects] = await Promise.all([
+      context.supabase.from("students").select("id, class_id").eq("school_id", data.schoolId).in("id", studentIds),
+      context.supabase.from("subjects").select("id, class_id").eq("school_id", data.schoolId).in("id", subjectIds),
+    ]);
+    if (students.error) throw students.error;
+    if (subjects.error) throw subjects.error;
+    const studentClasses = new Map((students.data ?? []).map((s) => [s.id, s.class_id]));
+    const subjectClasses = new Map((subjects.data ?? []).map((s) => [s.id, s.class_id]));
+    const seen = new Set<string>();
+    for (const entry of data.entries) {
+      const key = `${entry.studentId}:${entry.subjectId}`;
+      if (!studentClasses.has(entry.studentId) || !subjectClasses.has(entry.subjectId) || studentClasses.get(entry.studentId) !== subjectClasses.get(entry.subjectId)) {
+        throw new Error("Students and subjects must belong to the same class in this school.");
+      }
+      if (seen.has(key)) throw new Error("Duplicate mark entries are not allowed.");
+      seen.add(key);
+    }
     const payload = data.entries.map((e) => ({
       school_id: data.schoolId,
       sequence_id: data.sequenceId,

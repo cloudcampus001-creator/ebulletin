@@ -25,7 +25,7 @@ function Marksheet() {
   const logoutFn = useServerFn(teacherLogout);
 
   const infoQ = useQuery({ queryKey: ["ms-info", token], queryFn: () => infoFn({ data: { token } }) });
-  const sessQ = useQuery({ queryKey: ["ms-sess"], queryFn: () => sessFn() });
+  const sessQ = useQuery({ queryKey: ["ms-sess", token], queryFn: () => sessFn({ data: { token } }) });
 
   const [code, setCode] = useState("");
   const [pw, setPw] = useState("");
@@ -34,7 +34,10 @@ function Marksheet() {
   const [activeSubject, setActiveSubject] = useState<any | null>(null);
 
   useEffect(() => {
-    if (sessQ.data?.authenticated && !me) setMe({ fullName: sessQ.data.fullName });
+    if (sessQ.data?.authenticated && !me) {
+      setMe({ fullName: sessQ.data.fullName });
+      setSubjects(sessQ.data.subjects);
+    }
   }, [sessQ.data, me]);
 
   const login = useMutation({
@@ -45,6 +48,7 @@ function Marksheet() {
   const logout = useMutation({
     mutationFn: () => logoutFn(),
     onSuccess: () => { setMe(null); setSubjects(null); setActiveSubject(null); setCode(""); setPw(""); sessQ.refetch(); },
+    onError: () => toast.error("Could not sign out. Please try again."),
   });
 
   const info = infoQ.data;
@@ -73,11 +77,11 @@ function Marksheet() {
             <p className="eyebrow">Teacher login</p>
             <h1 className="mt-1 font-display text-2xl font-semibold">{info.class.name}</h1>
             <p className="mt-1 text-sm text-muted-foreground">{info.openSequence.name}{info.openSequence.term ? ` · ${info.openSequence.term}` : ""}</p>
-            <div className="mt-5 space-y-3">
+            <form className="mt-5 space-y-3" onSubmit={(e) => { e.preventDefault(); if (code.trim() && pw && !login.isPending) login.mutate(); }}>
               <div className="space-y-1.5"><Label>Login code / name</Label><Input value={code} onChange={(e) => setCode(e.target.value)} autoComplete="username" /></div>
-              <div className="space-y-1.5"><Label>Password</Label><Input type="password" value={pw} onChange={(e) => setPw(e.target.value)} autoComplete="current-password" onKeyDown={(e) => e.key === "Enter" && login.mutate()} /></div>
-              <Button className="w-full" onClick={() => login.mutate()} disabled={!code.trim() || !pw || login.isPending}>{login.isPending ? "Signing in…" : "Sign in"}</Button>
-            </div>
+              <div className="space-y-1.5"><Label>Password</Label><Input type="password" value={pw} onChange={(e) => setPw(e.target.value)} autoComplete="current-password" /></div>
+              <Button type="submit" className="w-full" disabled={!code.trim() || !pw || login.isPending}>{login.isPending ? "Signing in…" : "Sign in"}</Button>
+            </form>
           </div>
         )}
 
@@ -85,7 +89,7 @@ function Marksheet() {
           <div>
             <p className="text-sm text-muted-foreground">Signed in as <span className="font-medium text-foreground">{me.fullName}</span></p>
             <h1 className="mt-1 font-display text-2xl font-semibold">Choose a subject</h1>
-            {!subjects && <SubjectsFromSession onPick={setActiveSubject} />}
+
             <div className="mt-4 grid gap-2">
               {(subjects ?? []).map((s) => (
                 <button key={s.id} onClick={() => setActiveSubject(s)} className="rounded-md border border-border bg-card p-4 text-left transition-colors hover:border-secondary">
@@ -103,11 +107,6 @@ function Marksheet() {
   );
 }
 
-// If the page was reloaded but session is still valid, we re-fetch subjects via roster fallback by asking the user to re-pick is not possible; so just show nothing extra.
-function SubjectsFromSession({ onPick }: { onPick: (s: any) => void }) {
-  return <p className="mt-3 text-sm text-muted-foreground">Loading your subjects… If nothing appears, tap Exit and sign in again.</p>;
-}
-
 function RosterEntry({ subject, subsystem, onBack }: { subject: any; subsystem: string; onBack: () => void }) {
   const rosterFn = useServerFn(marksheetRoster);
   const saveFn = useServerFn(saveMarksheet);
@@ -123,12 +122,13 @@ function RosterEntry({ subject, subsystem, onBack }: { subject: any; subsystem: 
 
   const save = useMutation({
     mutationFn: () => {
+      if (!q.data) throw new ValidationError("The class has not loaded. Please try again.");
       const entries: any[] = [];
-      for (const st of q.data!.students) {
+      for (const st of q.data.students) {
         const raw = marks[st.id];
         const val = raw === undefined || raw === "" ? null : Number(raw);
         if (val !== null && (Number.isNaN(val) || val < 0 || val > max)) throw new ValidationError(`Invalid mark for ${st.last_name}. Must be 0–${max}.`);
-        if (val !== null || q.data!.marks[st.id] != null) entries.push({ studentId: st.id, mark: val });
+        if (val !== null || q.data.marks[st.id] != null) entries.push({ studentId: st.id, mark: val });
       }
       return saveFn({ data: { subjectId: subject.id, entries } });
     },
@@ -152,7 +152,7 @@ function RosterEntry({ subject, subsystem, onBack }: { subject: any; subsystem: 
         retrying={save.isPending}
         onRetry={() => save.mutate()}
       />
-      {!q.data ? <div className="mt-4 h-40 animate-pulse rounded-md bg-muted" /> : (
+      {q.isError ? <div className="mt-4 text-destructive"><p>{q.error instanceof Error ? q.error.message : "Could not load the class."}</p><Button variant="outline" onClick={() => q.refetch()}>Try again</Button></div> : !q.data ? <div className="mt-4 h-40 animate-pulse rounded-md bg-muted" /> : (
         <div className="mt-4 space-y-1.5">
           {q.data.students.map((st) => (
             <div key={st.id} className="flex items-center justify-between rounded-md border border-border bg-card px-3 py-2">
@@ -168,7 +168,7 @@ function RosterEntry({ subject, subsystem, onBack }: { subject: any; subsystem: 
         <div className="mx-auto max-w-2xl space-y-2">
           <SaveStatus
             error={save.isError && !isValidationError(save.error) ? "unsaved" : null}
-            retrying={false}
+            retrying={save.isPending}
             onRetry={() => save.mutate()}
           />
           <Button className="w-full" onClick={() => save.mutate()} disabled={save.isPending || !q.data}><Save className="mr-1.5 h-4 w-4" /> Save marks</Button>
