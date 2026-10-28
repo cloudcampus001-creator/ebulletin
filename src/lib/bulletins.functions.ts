@@ -28,6 +28,9 @@ export const getBulletinData = createServerFn({ method: "GET" })
     if (subjRes.error) throw subjRes.error;
     if (studRes.error) throw studRes.error;
     if (gradeRes.error) throw gradeRes.error;
+    if (seqRes.error) throw seqRes.error;
+    if (conductRes.error) throw conductRes.error;
+    if (remarkRes.error) throw remarkRes.error;
 
     return {
       school: {
@@ -85,6 +88,9 @@ export const renderBulletins = createServerFn({ method: "GET" })
     if (subjRes.error) throw subjRes.error;
     if (studRes.error) throw studRes.error;
     if (gradeRes.error) throw gradeRes.error;
+    if (seqRes.error) throw seqRes.error;
+    if (conductRes.error) throw conductRes.error;
+    if (remarkRes.error) throw remarkRes.error;
 
     const doc: BulletinDoc = {
       school: {
