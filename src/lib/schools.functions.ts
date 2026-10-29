@@ -148,6 +148,7 @@ export const getSchoolSummary = createServerFn({ method: "GET" })
     ]);
     if (classesRes.error) throw classesRes.error;
     if (yearRes.error) throw yearRes.error;
+    if (studentsRes.error) throw studentsRes.error;
     return {
       classes: classesRes.data ?? [],
       studentCount: studentsRes.count ?? 0,
@@ -158,7 +159,7 @@ export const updateSchoolBranding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ schoolId: z.string().uuid(), logo_url: z.string().max(800000).nullable() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.from("schools").update({ logo_url: data.logo_url }).eq("id", data.schoolId);
+    const { error } = await context.supabase.from("schools").update({ logo_url: data.logo_url }).eq("id", data.schoolId).select("id").single();
     if (error) throw error;
     return { ok: true };
   });

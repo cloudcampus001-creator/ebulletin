@@ -26,6 +26,8 @@ export const setSequenceStatus = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
+    const { error: targetError } = await supabase.from("sequences").select("id").eq("id", data.sequenceId).eq("school_id", data.schoolId).single();
+    if (targetError) throw targetError;
     if (data.status === "open") {
       // Enforce a single open sequence per school so the teacher flow is deterministic.
       const { error: closeErr } = await supabase
@@ -38,7 +40,7 @@ export const setSequenceStatus = createServerFn({ method: "POST" })
     const { error } = await supabase
       .from("sequences")
       .update({ status: data.status })
-      .eq("id", data.sequenceId);
+      .eq("id", data.sequenceId).eq("school_id", data.schoolId).select("id").single();
     if (error) throw error;
     return { ok: true };
   });

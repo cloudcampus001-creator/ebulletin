@@ -13,7 +13,7 @@ export const listClasses = createServerFn({ method: "GET" })
       supabase.from("students").select("id, class_id").eq("school_id", data.schoolId),
       supabase.from("teacher_assignments").select("id, class_id").eq("school_id", data.schoolId),
     ]);
-    if (clsRes.error) throw clsRes.error;
+    for (const result of [clsRes, subjRes, studRes, asgRes]) if (result.error) throw result.error;
     const subjCount = new Map<string, number>();
     (subjRes.data ?? []).forEach((s) => subjCount.set(s.class_id, (subjCount.get(s.class_id) ?? 0) + 1));
     const studCount = new Map<string, number>();
@@ -44,6 +44,7 @@ export const getClass = createServerFn({ method: "GET" })
       supabase.from("students").select("id", { count: "exact", head: true }).eq("class_id", cls.id),
       supabase.from("teacher_assignments").select("id, teacher_id, subject_id, teachers(id, full_name, login_code, active), subjects(id, name)").eq("class_id", cls.id),
     ]);
+    if (studRes.error) throw studRes.error;
     if (subjRes.error) throw subjRes.error;
     if (asgRes.error) throw asgRes.error;
     return {
@@ -66,12 +67,13 @@ export const createClass = createServerFn({ method: "POST" })
   .inputValidator((d) => classInput.parse(d))
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const { data: year } = await supabase
+    const { data: year, error: yearError } = await supabase
       .from("academic_years")
       .select("id")
       .eq("school_id", data.schoolId)
       .eq("is_current", true)
       .maybeSingle();
+    if (yearError) throw yearError;
     const { data: created, error } = await supabase
       .from("classes")
       .insert({
@@ -101,7 +103,7 @@ export const updateClass = createServerFn({ method: "POST" })
     const { error } = await context.supabase
       .from("classes")
       .update({ name: data.name, level: data.level, stream: data.stream ?? null })
-      .eq("id", data.classId);
+      .eq("id", data.classId).select("id").single();
     if (error) throw error;
     return { ok: true };
   });
@@ -110,7 +112,7 @@ export const deleteClass = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ classId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.from("classes").delete().eq("id", data.classId);
+    const { error } = await context.supabase.from("classes").delete().eq("id", data.classId).select("id").single();
     if (error) throw error;
     return { ok: true };
   });
@@ -127,7 +129,10 @@ export const addSubject = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const { count } = await supabase.from("subjects").select("id", { count: "exact", head: true }).eq("class_id", data.classId);
+    const { error: classError } = await supabase.from("classes").select("id").eq("id", data.classId).eq("school_id", data.schoolId).single();
+    if (classError) throw classError;
+    const { count, error: countError } = await supabase.from("subjects").select("id", { count: "exact", head: true }).eq("class_id", data.classId);
+    if (countError) throw countError;
     const { error } = await supabase.from("subjects").insert({
       class_id: data.classId,
       school_id: data.schoolId,
@@ -152,7 +157,7 @@ export const updateSubject = createServerFn({ method: "POST" })
     const { error } = await context.supabase
       .from("subjects")
       .update({ name: data.name, coefficient: data.coefficient })
-      .eq("id", data.subjectId);
+      .eq("id", data.subjectId).select("id").single();
     if (error) throw error;
     return { ok: true };
   });
@@ -161,7 +166,7 @@ export const deleteSubject = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ subjectId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.from("subjects").delete().eq("id", data.subjectId);
+    const { error } = await context.supabase.from("subjects").delete().eq("id", data.subjectId).select("id").single();
     if (error) throw error;
     return { ok: true };
   });

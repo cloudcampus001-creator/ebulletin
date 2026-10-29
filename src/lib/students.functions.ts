@@ -29,6 +29,8 @@ export const addStudent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => studentInput.parse(d))
   .handler(async ({ data, context }) => {
+    const { error: classError } = await context.supabase.from("classes").select("id").eq("id", data.classId).eq("school_id", data.schoolId).single();
+    if (classError) throw classError;
     const { error } = await context.supabase.from("students").insert({
       class_id: data.classId,
       school_id: data.schoolId,
@@ -64,7 +66,7 @@ export const updateStudent = createServerFn({ method: "POST" })
         sex: data.sex ?? null,
         date_of_birth: data.date_of_birth || null,
       })
-      .eq("id", data.studentId);
+      .eq("id", data.studentId).select("id").single();
     if (error) throw error;
     return { ok: true };
   });
@@ -73,7 +75,7 @@ export const deleteStudent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ studentId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.from("students").delete().eq("id", data.studentId);
+    const { error } = await context.supabase.from("students").delete().eq("id", data.studentId).select("id").single();
     if (error) throw error;
     return { ok: true };
   });
@@ -99,6 +101,8 @@ export const importStudents = createServerFn({ method: "POST" })
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
+    const { error: classError } = await context.supabase.from("classes").select("id").eq("id", data.classId).eq("school_id", data.schoolId).single();
+    if (classError) throw classError;
     const payload = data.rows.map((r) => ({
       class_id: data.classId,
       school_id: data.schoolId,
