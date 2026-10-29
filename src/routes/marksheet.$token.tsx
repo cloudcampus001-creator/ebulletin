@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { marksheetInfo, teacherLogin, teacherSession, teacherLogout, marksheetRoster, saveMarksheet } from "@/lib/marksheet.functions";
 import { SaveStatus, ValidationError, isValidationError } from "@/components/save-status";
-import { maxMark } from "@/lib/grading";
+import { maxMark, convertMark } from "@/lib/grading";
 
 export const Route = createFileRoute("/marksheet/$token")({
   ssr: false,
@@ -113,28 +113,33 @@ function RosterEntry({ subject, subsystem, onBack }: { subject: any; subsystem: 
   const max = maxMark(subsystem as any);
   const q = useQuery({ queryKey: ["ms-roster", subject.id], queryFn: () => rosterFn({ data: { subjectId: subject.id } }) });
   const [marks, setMarks] = useState<Record<string, string>>({});
+  const [outOfRaw, setOutOfRaw] = useState("20");
   useEffect(() => {
     if (!q.data) return;
     const m: Record<string, string> = {};
+    // Stored marks are on the report-card scale; show them on that scale and reset total to it.
     Object.entries(q.data.marks).forEach(([k, v]) => { if (v != null) m[k] = String(v); });
     setMarks(m);
+    setOutOfRaw("20");
   }, [q.data]);
 
   const save = useMutation({
     mutationFn: () => {
       if (!q.data) throw new ValidationError("The class has not loaded. Please try again.");
+      const outOf = Number(outOfRaw);
+      if (!Number.isFinite(outOf) || outOf <= 0 || outOf > 1000) throw new ValidationError("The total (marks out of) must be a number greater than 0.");
       const entries: any[] = [];
       for (const st of q.data.students) {
         const raw = marks[st.id];
-        const val = raw === undefined || raw === "" ? null : Number(raw);
-        if (val !== null && (Number.isNaN(val) || val < 0 || val > max)) throw new ValidationError(`Invalid mark for ${st.last_name}. Must be 0–${max}.`);
-        if (val !== null || q.data.marks[st.id] != null) entries.push({ studentId: st.id, mark: val });
+        const val = raw === undefined || raw === "" ? null : Number(raw.replace(",", "."));
+        if (val !== null && (Number.isNaN(val) || val < 0 || val > outOf)) throw new ValidationError(`Invalid mark for ${st.last_name}. Must be 0–${outOf}.`);
+        if (val !== null || q.data.marks[st.id] != null) entries.push({ studentId: st.id, mark: val === null ? null : convertMark(val, outOf, max) });
       }
       return saveFn({ data: { subjectId: subject.id, entries } });
     },
     retry: (count, err) => count < 1 && !isValidationError(err),
     retryDelay: 1500,
-    onSuccess: (r) => toast.success(`Saved ${r.saved} marks`),
+    onSuccess: (r) => { toast.success(`Saved ${r.saved} marks (converted to /${max})`); q.refetch(); },
     onError: (e: any) => { if (isValidationError(e)) toast.error(e?.message ?? "Invalid marks"); },
   });
 
@@ -145,7 +150,12 @@ function RosterEntry({ subject, subsystem, onBack }: { subject: any; subsystem: 
         <Button size="sm" onClick={() => save.mutate()} disabled={save.isPending || !q.data}><Save className="mr-1.5 h-4 w-4" /> Save</Button>
       </div>
       <h1 className="mt-2 font-display text-2xl font-semibold">{subject.name}</h1>
-      <p className="text-sm text-muted-foreground">{q.data?.sequence.name} · out of {max}</p>
+      <p className="text-sm text-muted-foreground">{q.data?.sequence.name} · saved on the report card out of {max}</p>
+      <label className="mt-3 flex items-center gap-2 text-sm">
+        <span className="font-medium">Marks out of</span>
+        <input inputMode="decimal" value={outOfRaw} onChange={(e) => setOutOfRaw(e.target.value)} aria-label="Marks out of" className="h-9 w-20 rounded border border-input bg-background text-center tabular-nums focus:border-secondary focus:outline-none focus:ring-1 focus:ring-ring" />
+        {Number(outOfRaw) !== max && Number(outOfRaw) > 0 && <span className="text-xs text-muted-foreground">e.g. 15/{outOfRaw} → {convertMark(15, Number(outOfRaw), max)}/{max}</span>}
+      </label>
       <SaveStatus
         className="mt-3"
         error={save.isError && !isValidationError(save.error) ? "unsaved" : null}

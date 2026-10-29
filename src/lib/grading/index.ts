@@ -158,3 +158,9 @@ export function sequenceLabel(subsystem: Subsystem, index: number): string {
 export function termOfSequence(index: number): number {
   return Math.ceil(index / 2);
 }
+
+/** Convert a mark entered out of `outOf` to the report-card scale `target` (default 20), rounded to 2 decimals. */
+export function convertMark(raw: number, outOf: number, target = 20): number {
+  if (!(outOf > 0)) throw new Error("Total must be greater than 0");
+  return Math.round((raw * target / outOf) * 100) / 100;
+}
