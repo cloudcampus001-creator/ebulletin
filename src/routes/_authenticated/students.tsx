@@ -7,7 +7,7 @@ import { useSchool } from "@/lib/use-school";
 import { listClasses } from "@/lib/classes.functions";
 
 export const Route = createFileRoute("/_authenticated/students")({
-  head: () => ({ meta: [{ title: "Students · Bulletin" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{"title": "Students · Bulletin"}, {"name": "description", "content": "Manage student rosters by school class."}, {"property": "og:title", "content": "Students · Bulletin"}, {"property": "og:description", "content": "Manage student rosters by school class."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: StudentsPage,
 });
 

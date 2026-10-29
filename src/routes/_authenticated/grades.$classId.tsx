@@ -14,7 +14,7 @@ import { maxMark } from "@/lib/grading";
 import { SaveStatus, ValidationError, isValidationError } from "@/components/save-status";
 
 export const Route = createFileRoute("/_authenticated/grades/$classId")({
-  head: () => ({ meta: [{ title: "Enter marks · Bulletin" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{"title": "Enter marks · Bulletin"}, {"name": "description", "content": "Enter and save marks for each class and sequence."}, {"property": "og:title", "content": "Enter marks · Bulletin"}, {"property": "og:description", "content": "Enter and save marks for each class and sequence."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: GradeGrid,
 });
 
@@ -29,7 +29,7 @@ function GradeGrid() {
   const saveFn = useServerFn(saveGrades);
 
   const classQ = useQuery({ queryKey: ["class", classId], queryFn: () => classFn({ data: { classId } }) });
-  const seqQ = useQuery({ queryKey: ["sequences", school?.id], queryFn: () => seqFn({ data: { schoolId: school!.id } }), enabled: !!school?.id });
+  const seqQ = useQuery({ queryKey: ["sequences", school?.id], queryFn: () => seqFn({ data: { schoolId: school?.id ?? "" } }), enabled: !!school?.id });
   const [seqId, setSeqId] = useState("");
   useEffect(() => {
     if (!seqId && seqQ.data?.length) setSeqId((seqQ.data.find((s: any) => s.status === "open") ?? seqQ.data[0]).id);
@@ -46,15 +46,18 @@ function GradeGrid() {
 
   const save = useMutation({
     mutationFn: () => {
+      if (!gridQ.data || !school) throw new ValidationError("The class has not loaded. Please try again.");
       const entries: any[] = [];
-      for (const st of gridQ.data!.students) for (const su of gridQ.data!.subjects) {
+      const students = gridQ.data.students;
+      const subjects: { id: string; name: string; coefficient: number }[] = gridQ.data.subjects;
+      for (const st of students) for (const su of subjects) {
         const key = `${st.id}:${su.id}`;
         const raw = marks[key];
         const val = raw === undefined || raw === "" ? null : Number(raw);
         if (val !== null && (Number.isNaN(val) || val < 0 || val > max)) throw new ValidationError(`Invalid mark for ${st.last_name} (${su.name}). Must be 0–${max}.`);
-        if (val !== null || gridQ.data!.marks[key] != null) entries.push({ studentId: st.id, subjectId: su.id, mark: val });
+        if (val !== null || gridQ.data.marks[key] != null) entries.push({ studentId: st.id, subjectId: su.id, mark: val });
       }
-      return saveFn({ data: { schoolId: school!.id, sequenceId: seqId, entries } });
+      return saveFn({ data: { schoolId: school?.id ?? "", sequenceId: seqId, entries } });
     },
     // Retry once with backoff before falling back to the manual retry banner.
     retry: (count, err) => count < 1 && !isValidationError(err),
@@ -85,7 +88,7 @@ function GradeGrid() {
         retrying={save.isPending}
         onRetry={() => save.mutate()}
       />
-      {!data ? <div className="h-40 animate-pulse rounded-md bg-muted" /> : data.students.length === 0 || data.subjects.length === 0 ? (
+      {gridQ.isError || seqQ.isError || classQ.isError ? <p className="text-destructive">Could not load marks. <Button variant="outline" onClick={() => { gridQ.refetch(); seqQ.refetch(); classQ.refetch(); }}>Try again</Button></p> : !seqId && seqQ.isSuccess ? <p className="text-muted-foreground">No marking sequences are available.</p> : !data ? <div className="h-40 animate-pulse rounded-md bg-muted" /> : data.students.length === 0 || data.subjects.length === 0 ? (
         <p className="text-muted-foreground">Add students and subjects to this class first.</p>
       ) : (
         <div className="overflow-x-auto rounded-md border border-border">

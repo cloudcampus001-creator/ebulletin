@@ -17,7 +17,7 @@ import { listStudents, addStudent, updateStudent, deleteStudent, importStudents 
 import { listTeachers, assignTeacher, unassignTeacher } from "@/lib/teachers.functions";
 
 export const Route = createFileRoute("/_authenticated/classes/$classId")({
-  head: () => ({ meta: [{ title: "Class · Bulletin" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{"title": "Class · Bulletin"}, {"name": "description", "content": "Manage class subjects, students, teacher assignments, and QR marksheets."}, {"property": "og:title", "content": "Class · Bulletin"}, {"property": "og:description", "content": "Manage class subjects, students, teacher assignments, and QR marksheets."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: ClassDetail,
 });
 
@@ -48,7 +48,7 @@ function ClassDetail() {
         </>
       }
     >
-      {!data ? (
+      {classQ.isError ? <p className="text-destructive">Could not load this class. <Button variant="outline" onClick={() => classQ.refetch()}>Try again</Button></p> : !data ? (
         <div className="h-40 animate-pulse rounded-md bg-muted" />
       ) : (
         <Tabs defaultValue="subjects">
@@ -60,13 +60,13 @@ function ClassDetail() {
           </TabsList>
 
           <TabsContent value="subjects" className="mt-6">
-            <SubjectsTab classId={classId} schoolId={school?.id ?? ""} subjects={data.subjects} onChange={invalidate} />
+            <SubjectsTab classId={classId} schoolId={data.class.school_id} subjects={data.subjects} onChange={invalidate} />
           </TabsContent>
           <TabsContent value="students" className="mt-6">
-            <StudentsTab classId={classId} schoolId={school?.id ?? ""} subsystem={school?.subsystem ?? "EN"} />
+            <StudentsTab classId={classId} schoolId={data.class.school_id} subsystem={school?.subsystem ?? "EN"} />
           </TabsContent>
           <TabsContent value="teachers" className="mt-6">
-            <TeachersTab classId={classId} schoolId={school?.id ?? ""} subjects={data.subjects} assignments={data.assignments} onChange={invalidate} />
+            <TeachersTab classId={classId} schoolId={data.class.school_id} subjects={data.subjects} assignments={data.assignments} onChange={invalidate} />
           </TabsContent>
           <TabsContent value="qr" className="mt-6">
             <QrTab classId={classId} className={data.class.name} token={data.class.marksheet_token} onChange={invalidate} />

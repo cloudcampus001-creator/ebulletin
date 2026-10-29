@@ -2,22 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { GraduationCap, FileText, Calculator, Languages, Printer, Users } from "lucide-react";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Bulletin — Generate Cameroon School Report Cards" },
-      {
-        name: "description",
-        content:
-          "Multi-tenant SaaS for Cameroonian secondary schools. Generate official bulletins (Francophone) and report cards (Anglophone) — automatic averages, ranks, and print-ready PDFs.",
-      },
-      { property: "og:title", content: "Bulletin — Cameroon Report Card Generator" },
-      {
-        property: "og:description",
-        content:
-          "Replace Excel and Word. Enter marks once, print authentic bulletins for every student in a class.",
-      },
-    ],
-  }),
+  head: () => ({ meta: [{"title": "Bulletin — Generate Cameroon School Report Cards"}, {"name": "description", "content": "Generate Cameroon secondary-school report cards for Francophone and Anglophone schools."}, {"property": "og:title", "content": "Bulletin — Generate Cameroon School Report Cards"}, {"property": "og:description", "content": "Generate Cameroon secondary-school report cards for Francophone and Anglophone schools."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}] }),
   component: Landing,
 });
 
