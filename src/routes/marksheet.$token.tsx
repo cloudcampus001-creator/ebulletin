@@ -120,7 +120,7 @@ function RosterEntry({ subject, subsystem, onBack }: { subject: any; subsystem: 
     // Stored marks are on the report-card scale; show them on that scale and reset total to it.
     Object.entries(q.data.marks).forEach(([k, v]) => { if (v != null) m[k] = String(v); });
     setMarks(m);
-    setOutOfRaw(String(max === 20 ? 20 : max));
+    setOutOfRaw("20");
   }, [q.data]);
 
   const save = useMutation({
