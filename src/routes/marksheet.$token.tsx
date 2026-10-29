@@ -13,7 +13,7 @@ import { maxMark } from "@/lib/grading";
 
 export const Route = createFileRoute("/marksheet/$token")({
   ssr: false,
-  head: () => ({ meta: [{ title: "Marksheet" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{"title": "Teacher marksheet · Bulletin"}, {"name": "description", "content": "Secure teacher marksheet for assigned classes and subjects."}, {"property": "og:title", "content": "Teacher marksheet · Bulletin"}, {"property": "og:description", "content": "Secure teacher marksheet for assigned classes and subjects."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: Marksheet,
 });
 

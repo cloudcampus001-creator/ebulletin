@@ -90,27 +90,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Bulletin — Cameroon Report Card Generator" },
-      {
-        name: "description",
-        content:
-          "Generate official Cameroonian school bulletins and report cards — Francophone and Anglophone. Replace Excel and Word with one tool.",
-      },
       { name: "author", content: "Bulletin" },
-      { property: "og:title", content: "Bulletin — Cameroon Report Card Generator" },
-      {
-        property: "og:description",
-        content:
-          "Generate official Cameroonian school bulletins and report cards — Francophone and Anglophone subsystems.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "Bulletin — Cameroon Report Card Generator" },
-      { name: "description", content: "School Mark Manager simplifies academic record-keeping for educational institutions." },
-      { property: "og:description", content: "School Mark Manager simplifies academic record-keeping for educational institutions." },
-      { name: "twitter:description", content: "School Mark Manager simplifies academic record-keeping for educational institutions." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/054978d3-997f-45cd-b7db-6ebec140a3ec/id-preview-2cc6879e--a0cee39e-ef6e-411a-97d9-797eddb87f2c.lovable.app-1782682252534.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/054978d3-997f-45cd-b7db-6ebec140a3ec/id-preview-2cc6879e--a0cee39e-ef6e-411a-97d9-797eddb87f2c.lovable.app-1782682252534.png" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),

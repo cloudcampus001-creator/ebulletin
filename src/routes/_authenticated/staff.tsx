@@ -13,7 +13,7 @@ import { useSchool } from "@/lib/use-school";
 import { listTeachers, createTeacher, updateTeacher, deleteTeacher, resetTeacherPassword } from "@/lib/teachers.functions";
 
 export const Route = createFileRoute("/_authenticated/staff")({
-  head: () => ({ meta: [{ title: "Staff · Bulletin" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{"title": "Staff · Bulletin"}, {"name": "description", "content": "Manage teacher accounts and subject assignments."}, {"property": "og:title", "content": "Staff · Bulletin"}, {"property": "og:description", "content": "Manage teacher accounts and subject assignments."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: StaffPage,
 });
 

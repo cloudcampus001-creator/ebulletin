@@ -17,7 +17,7 @@ import { listStudents, addStudent, updateStudent, deleteStudent, importStudents 
 import { listTeachers, assignTeacher, unassignTeacher } from "@/lib/teachers.functions";
 
 export const Route = createFileRoute("/_authenticated/classes/$classId")({
-  head: () => ({ meta: [{ title: "Class · Bulletin" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{"title": "Class · Bulletin"}, {"name": "description", "content": "Manage class subjects, students, teacher assignments, and QR marksheets."}, {"property": "og:title", "content": "Class · Bulletin"}, {"property": "og:description", "content": "Manage class subjects, students, teacher assignments, and QR marksheets."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: ClassDetail,
 });
 

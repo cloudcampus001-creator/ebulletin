@@ -14,7 +14,7 @@ import { SUBSYSTEM_PRESETS, presetSubjects } from "@/lib/defaults";
 import type { Subsystem } from "@/lib/grading";
 
 export const Route = createFileRoute("/_authenticated/setup")({
-  head: () => ({ meta: [{ title: "Set up your school · Bulletin" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{"title": "Set up your school · Bulletin"}, {"name": "description", "content": "Set up a Cameroon secondary school, academic year, and classes."}, {"property": "og:title", "content": "Set up your school · Bulletin"}, {"property": "og:description", "content": "Set up a Cameroon secondary school, academic year, and classes."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: SetupWizard,
 });
 

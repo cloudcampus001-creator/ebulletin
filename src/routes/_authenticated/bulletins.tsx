@@ -12,7 +12,7 @@ import { listSequences } from "@/lib/sequences.functions";
 import { renderBulletins } from "@/lib/bulletins.functions";
 
 export const Route = createFileRoute("/_authenticated/bulletins")({
-  head: () => ({ meta: [{ title: "Bulletins · Bulletin" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{"title": "Report cards · Bulletin"}, {"name": "description", "content": "Generate print-ready school report cards with weighted averages and ranks."}, {"property": "og:title", "content": "Report cards · Bulletin"}, {"property": "og:description", "content": "Generate print-ready school report cards with weighted averages and ranks."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: BulletinsPage,
 });
 

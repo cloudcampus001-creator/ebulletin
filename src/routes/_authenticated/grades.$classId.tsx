@@ -14,7 +14,7 @@ import { maxMark } from "@/lib/grading";
 import { SaveStatus, ValidationError, isValidationError } from "@/components/save-status";
 
 export const Route = createFileRoute("/_authenticated/grades/$classId")({
-  head: () => ({ meta: [{ title: "Enter marks · Bulletin" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{"title": "Enter marks · Bulletin"}, {"name": "description", "content": "Enter and save marks for each class and sequence."}, {"property": "og:title", "content": "Enter marks · Bulletin"}, {"property": "og:description", "content": "Enter and save marks for each class and sequence."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: GradeGrid,
 });
 

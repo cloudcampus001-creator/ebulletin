@@ -13,7 +13,7 @@ import { useSchool } from "@/lib/use-school";
 import { listClasses, createClass } from "@/lib/classes.functions";
 
 export const Route = createFileRoute("/_authenticated/classes/")({
-  head: () => ({ meta: [{ title: "Classes · Bulletin" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{"title": "Classes · Bulletin"}, {"name": "description", "content": "Manage school classes, subjects, and marksheets."}, {"property": "og:title", "content": "Classes · Bulletin"}, {"property": "og:description", "content": "Manage school classes, subjects, and marksheets."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: ClassesPage,
 });
 

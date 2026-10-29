@@ -11,7 +11,7 @@ import { listSequences, setSequenceStatus } from "@/lib/sequences.functions";
 import { updateSchoolBranding } from "@/lib/schools.functions";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Settings · Bulletin" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{"title": "Settings · Bulletin"}, {"name": "description", "content": "Manage school branding and marking sequences."}, {"property": "og:title", "content": "Settings · Bulletin"}, {"property": "og:description", "content": "Manage school branding and marking sequences."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: SettingsPage,
 });
 

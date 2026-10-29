@@ -17,13 +17,7 @@ const search = z.object({
 
 export const Route = createFileRoute("/auth")({
   validateSearch: search,
-  head: () => ({
-    meta: [
-      { title: "Sign in · Bulletin" },
-      { name: "description", content: "Sign in to manage your school's bulletins and report cards." },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
+  head: () => ({ meta: [{"title": "Sign in · Bulletin"}, {"name": "description", "content": "Sign in to manage your school’s bulletins and report cards."}, {"property": "og:title", "content": "Sign in · Bulletin"}, {"property": "og:description", "content": "Sign in to manage your school’s bulletins and report cards."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   beforeLoad: async ({ search }) => {
     if (typeof window === "undefined") return;
     const { data } = await supabase.auth.getSession();

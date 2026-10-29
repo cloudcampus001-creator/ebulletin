@@ -6,7 +6,7 @@ import { listMySchools, getSchoolSummary } from "@/lib/schools.functions";
 import { BookOpen, Users, FileText, Plus, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard · Bulletin" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{"title": "Dashboard · Bulletin"}, {"name": "description", "content": "School overview, classes, and academic records."}, {"property": "og:title", "content": "Dashboard · Bulletin"}, {"property": "og:description", "content": "School overview, classes, and academic records."}, {"property": "og:type", "content": "website"}, {"name": "twitter:card", "content": "summary"}, {"name": "robots", "content": "noindex"}] }),
   component: Dashboard,
 });
 
@@ -31,7 +31,7 @@ function Dashboard() {
 
   const summaryQ = useQuery({
     queryKey: ["school-summary", firstSchool?.id],
-    queryFn: () => summaryFn({ data: { schoolId: firstSchool!.id } }),
+    queryFn: () => summaryFn({ data: { schoolId: firstSchool?.id ?? "" } }),
     enabled: !!firstSchool?.id,
   });
 
@@ -81,7 +81,7 @@ function Dashboard() {
             </Link>
           ))}
           <Link
-            to="/setup"
+            to="/classes"
             className="flex flex-col items-center justify-center rounded-md border border-dashed border-border bg-background p-6 text-sm font-medium text-muted-foreground transition-colors hover:border-secondary hover:text-foreground"
           >
             <Plus className="mb-2 h-5 w-5" />
