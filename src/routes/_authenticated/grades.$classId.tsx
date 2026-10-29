@@ -48,7 +48,9 @@ function GradeGrid() {
     mutationFn: () => {
       if (!gridQ.data || !school) throw new ValidationError("The class has not loaded. Please try again.");
       const entries: any[] = [];
-      for (const st of gridQ.data.students) for (const su of gridQ.data.subjects) {
+      const students = gridQ.data.students;
+      const subjects: { id: string; name: string; coefficient: number }[] = gridQ.data.subjects;
+      for (const st of students) for (const su of subjects) {
         const key = `${st.id}:${su.id}`;
         const raw = marks[key];
         const val = raw === undefined || raw === "" ? null : Number(raw);
