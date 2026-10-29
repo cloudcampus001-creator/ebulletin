@@ -113,22 +113,27 @@ function RosterEntry({ subject, subsystem, onBack }: { subject: any; subsystem: 
   const max = maxMark(subsystem as any);
   const q = useQuery({ queryKey: ["ms-roster", subject.id], queryFn: () => rosterFn({ data: { subjectId: subject.id } }) });
   const [marks, setMarks] = useState<Record<string, string>>({});
+  const [outOfRaw, setOutOfRaw] = useState("20");
   useEffect(() => {
     if (!q.data) return;
     const m: Record<string, string> = {};
+    // Stored marks are on the report-card scale; show them on that scale and reset total to it.
     Object.entries(q.data.marks).forEach(([k, v]) => { if (v != null) m[k] = String(v); });
     setMarks(m);
+    setOutOfRaw(String(max === 20 ? 20 : max));
   }, [q.data]);
 
   const save = useMutation({
     mutationFn: () => {
       if (!q.data) throw new ValidationError("The class has not loaded. Please try again.");
+      const outOf = Number(outOfRaw);
+      if (!Number.isFinite(outOf) || outOf <= 0 || outOf > 1000) throw new ValidationError("The total (marks out of) must be a number greater than 0.");
       const entries: any[] = [];
       for (const st of q.data.students) {
         const raw = marks[st.id];
-        const val = raw === undefined || raw === "" ? null : Number(raw);
-        if (val !== null && (Number.isNaN(val) || val < 0 || val > max)) throw new ValidationError(`Invalid mark for ${st.last_name}. Must be 0–${max}.`);
-        if (val !== null || q.data.marks[st.id] != null) entries.push({ studentId: st.id, mark: val });
+        const val = raw === undefined || raw === "" ? null : Number(raw.replace(",", "."));
+        if (val !== null && (Number.isNaN(val) || val < 0 || val > outOf)) throw new ValidationError(`Invalid mark for ${st.last_name}. Must be 0–${outOf}.`);
+        if (val !== null || q.data.marks[st.id] != null) entries.push({ studentId: st.id, mark: val === null ? null : convertMark(val, outOf, max) });
       }
       return saveFn({ data: { subjectId: subject.id, entries } });
     },
