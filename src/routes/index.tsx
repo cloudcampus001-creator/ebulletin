@@ -200,7 +200,7 @@ function Subsystems() {
             title="Anglophone subsystem"
             items={[
               "3 Terms per academic year",
-              "Marks out of /100, letter or GCE-style grades",
+              "Marks converted to /20, letter or GCE-style grades",
               "Class average, position, teacher remarks",
               "Forms 1–5 (O-Level) and Lower / Upper Sixth (A-Level)",
               "Class teacher &amp; principal remarks, promotion decision",

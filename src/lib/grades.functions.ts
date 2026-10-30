@@ -37,7 +37,7 @@ export const saveGrades = createServerFn({ method: "POST" })
           z.object({
             studentId: z.string().uuid(),
             subjectId: z.string().uuid(),
-            mark: z.number().min(0).max(100).nullable(),
+            mark: z.number().min(0).max(20).nullable(),
           }),
         )
         .max(2000),
@@ -52,7 +52,7 @@ export const saveGrades = createServerFn({ method: "POST" })
       .eq("id", data.schoolId)
       .single();
     if (schoolError) throw schoolError;
-    const maxMark = school.subsystem === "FR" ? 20 : 100;
+    const maxMark = 20;
     if (data.entries.some((e) => e.mark != null && e.mark > maxMark)) {
       throw new Error(`Marks must be between 0 and ${maxMark} for this school.`);
     }
