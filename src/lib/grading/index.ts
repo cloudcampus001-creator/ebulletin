@@ -121,11 +121,11 @@ export const DEFAULT_FR_BANDS: GradeBand[] = [
 ];
 
 export const DEFAULT_EN_BANDS: GradeBand[] = [
-  { min: 80, label: "A — Excellent" },
-  { min: 70, label: "B — Very Good" },
-  { min: 60, label: "C — Good" },
-  { min: 50, label: "D — Pass" },
-  { min: 40, label: "E — Weak" },
+  { min: 16, label: "A — Excellent" },
+  { min: 14, label: "B — Very Good" },
+  { min: 12, label: "C — Good" },
+  { min: 10, label: "D — Pass" },
+  { min: 8, label: "E — Weak" },
   { min: 0, label: "F — Fail" },
 ];
 
@@ -140,7 +140,9 @@ export function defaultBands(subsystem: Subsystem): GradeBand[] {
 }
 
 export function maxMark(subsystem: Subsystem): number {
-  return subsystem === "FR" ? 20 : 100;
+  // All report cards (FR and EN) are on /20.
+  void subsystem;
+  return 20;
 }
 
 export function termLabel(subsystem: Subsystem, index: number): string {

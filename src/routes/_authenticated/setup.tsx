@@ -106,7 +106,7 @@ function SetupWizard() {
               <Label>Which subsystem?</Label>
               <div className="mt-2 grid grid-cols-2 gap-3">
                 <SubsystemTile active={subsystem === "FR"} onClick={() => updateSubsystem("FR")} title="Francophone" sub="Trimestres · /20 · coefficients" />
-                <SubsystemTile active={subsystem === "EN"} onClick={() => updateSubsystem("EN")} title="Anglophone" sub="Terms · /100 · positions" />
+                <SubsystemTile active={subsystem === "EN"} onClick={() => updateSubsystem("EN")} title="Anglophone" sub="Terms · /20 · positions" />
               </div>
             </div>
             <div className="space-y-1.5">

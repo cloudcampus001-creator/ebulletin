@@ -191,7 +191,7 @@ export const saveMarksheet = createServerFn({ method: "POST" })
     z.object({
       subjectId: z.string().uuid(),
       entries: z
-        .array(z.object({ studentId: z.string().uuid(), mark: z.number().min(0).max(100).nullable() }))
+        .array(z.object({ studentId: z.string().uuid(), mark: z.number().min(0).max(20).nullable() }))
         .max(2000),
     }).parse(d),
   )
@@ -209,7 +209,7 @@ export const saveMarksheet = createServerFn({ method: "POST" })
       .single();
     if (schoolError) throw schoolError;
     if (!school) throw new Error("School not found.");
-    const maxMark = school.subsystem === "FR" ? 20 : 100;
+    const maxMark = 20;
     const { data: roster, error: rosterError } = await supabaseAdmin.from("students").select("id")
       .eq("class_id", d.classId).eq("school_id", d.schoolId);
     if (rosterError) throw rosterError;
